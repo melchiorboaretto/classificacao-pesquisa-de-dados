@@ -5,12 +5,12 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "utils.h"
+#include "sortingutils.h"
 #include "sorts.h"
 
-#define N_ALGOs 5                                                               // Qtd de algoritmos a serem testados
+#define N_ALGOs 8                                                               // Qtd de algoritmos a serem testados
 #define QTD_ARRAYS 3                                                            // quantidade de arrays a serem processados (1 por tipo)
-#define POTENCIAS 5                                                             // potências de 10 a serem testadas como tamanhos de arrays
+#define POTENCIAS 6                                                             // potências de 10 a serem testadas como tamanhos de arrays
 
 struct algo_info{
   char name[15];
@@ -23,12 +23,6 @@ struct array_info{
   char type;
   int* contents;
 };
-
-void bubblesort(int*, int, struct log_info*);
-void quicksort(int*, int, struct log_info*);
-void quicksort_aux(int*, int, int, struct log_info*);
-int particiona(int*, int, int, struct log_info*);
-void swap(int *, int *);
 
 int main(void){
   int info_total = N_ALGOs*3*(POTENCIAS-2);
@@ -58,9 +52,21 @@ int main(void){
   strcpy(algoritmos[3].acronym, "SKST");
   algoritmos[3].function = &shakesort;
 
-  strcpy(algoritmos[4].name, "BetterQuickSort");
+  strcpy(algoritmos[4].name, "BetterQuicksort");
   strcpy(algoritmos[4].acronym, "BQST");
   algoritmos[4].function = &better_quicksort;
+
+  strcpy(algoritmos[5].name, "Countingsort");
+  strcpy(algoritmos[5].acronym, "CTST");
+  algoritmos[5].function = &countingsort;
+
+  strcpy(algoritmos[6].name, "RadixsortMSD");
+  strcpy(algoritmos[6].acronym, "RDSM");
+  algoritmos[6].function = &radixsort_msd;
+
+  strcpy(algoritmos[7].name, "RadixsortLSD");
+  strcpy(algoritmos[7].acronym, "RDSL");
+  algoritmos[7].function = &radixsort_lsd;
 
   srand(42);                                                                    // inicializa gerador de números aleatórios
   result = 0;
@@ -103,8 +109,8 @@ int main(void){
         printf("\nArray ordenado: ");
         for(i=0;i<size;i++) printf("%d ", tmp_array[i]);
 
-        printf("\nQuantidade de trocas: %d", results[result].trocas);
-        printf("\nQuantidade de comparações: %d", results[result].comparacoes);
+        printf("\nQuantidade de trocas: %lu", results[result].trocas);
+        printf("\nQuantidade de comparações: %lu", results[result].comparacoes);
         printf("\nTempo de processamento: %f segundos\n", results[result].tempo);
 
         strcpy(results[result].sigla, algoritmos[algo].acronym);
@@ -126,14 +132,14 @@ int main(void){
   fprintf(file, "Algo. | Arr. type | Arr. size |   Trocas   | Comparações | Tempo (microssegundos)\n");
   for(i=0;i<info_total;i++){
     //printf("%9s - %5c - %8d - %11d - %11d - %10.7f\n", results[i].sigla, results[i].tipo, results[i].tamanho, results[i].comparacoes, results[i].trocas, results[i].tempo);
-    printf("%5s - %-9c - %9d - %10d - %11d - %10.7f\n",
+    printf("%5s - %-9c - %9d - %10lu - %11lu - %10.7f\n",
       results[i].sigla,
       results[i].tipo,
       results[i].tamanho,
       results[i].comparacoes,
       results[i].trocas,
       results[i].tempo);
-    fprintf(file, "%5s | %-9c | %9d | %10d | %11d | %10.7f\n",
+    fprintf(file, "%5s | %-9c | %9d | %10lu | %11lu | %10.7f\n",
       results[i].sigla,
       results[i].tipo,
       results[i].tamanho,

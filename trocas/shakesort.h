@@ -1,4 +1,4 @@
-#include "../utils.h"
+#include "../sortingutils.h"
 
 void shakesort(int *arr, int arr_size, struct log_info *log) {
 

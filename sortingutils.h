@@ -1,8 +1,9 @@
 #pragma once
+#include <stdint.h>
 
 struct log_info{
-  int comparacoes;
-  int trocas;
+  uint64_t comparacoes;
+  uint64_t trocas;
   double tempo;
   int tamanho;
   char sigla[5];

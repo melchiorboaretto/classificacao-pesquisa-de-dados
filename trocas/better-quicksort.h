@@ -1,4 +1,4 @@
-#include "../utils.h"
+#include "../sortingutils.h"
 
 int median_of_three(int a, int b, int  c) {
 
