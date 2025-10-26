@@ -130,7 +130,7 @@ int remove_key(SimpleHashTable* table, int key) {
     table->conteudo[index] = malloc(5*sizeof(char));
     strcpy(table->conteudo[index], "None");
 
-    return 0;
+    return index;
 }
 
 // modifica tamanho da tabela criando nova tabela (retorna true se conseguir)
