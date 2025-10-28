@@ -196,8 +196,47 @@ bool resize_on_new(SimpleHashTable** table_ref, int new_size) {
 
 // modifica tamanho da tabela nela mesmo (retorna true se conseguir)
 bool resize_in_situ(SimpleHashTable* table, int new_size) {
+
     // seu codigo aqui
-    return false;
+
+    // AQUI VALE RESSALTAR QUE O REALLOC DO C NAO CONSEGUE
+    // "NAO ALOCAR" SE NAO TIVER ESPACO CONTIGUO, ELE SEGUE PRA OUTRO
+    // LUGAR DA MEMORIA E ***INVALIDA*** (passa um free()) no ANTERIOR
+    // por isso se a funcao retornar false perde toda a tabela
+    // (daria pra corrigir mexendo no contrato dela, mas seguindo as regras fica assim)
+
+    SimpleHashTable *testptr; // Pra testar o retorno do realloc()
+
+    // Nao faz nada se o new_size for menor pra evitar estragar a tabela.
+    if (!(new_size > table->size)) {
+        return true;
+    }
+
+    testptr = realloc(table, new_size * sizeof(SimpleHashTable));
+
+    // Limpa tudo ja que o ponteiro vai ser perdido ao final da funcao
+    if (testptr != table) {
+
+        destroy_table(testptr);
+        return false;
+    }
+
+    // Agora supondo que deu certo
+    //
+    // Verifica que o indice do loop comeca no primeiro elemento
+    // da nova alocacao
+    for (int i = table->size; i < new_size; i++) {
+        table->dicionario[i] = -1;
+        table->used[i] = false;
+        if (table->conteudo[i] == NULL) {
+            table->conteudo[i] = malloc(5 * sizeof(int));
+            strcpy(table->conteudo[i], "None");
+        }
+    }
+
+    table->size = new_size;
+
+    return true;
 }
 
 // Mostra conteúdo da tabela (para depuração)
